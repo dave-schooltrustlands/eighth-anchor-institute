@@ -89,7 +89,7 @@ const statusStroke: Record<string, string> = {
       const rx = bx(plot.x, RW);
       const ry = by(plot.y, RH);
       return (
-        <g class="building-footprint" data-building-id={`reserved-${plot.id}`} style="cursor: default">
+        <g class="reserved-plot" data-plot-id={plot.id} style="cursor: pointer" tabindex="0" role="button" aria-label={plot.label}>
           <rect
             x={rx}
             y={ry}
@@ -120,7 +120,7 @@ const statusStroke: Record<string, string> = {
             font-size="14"
             fill="#0E1A24"
           >
-            {plot.label.replace('Reserved plot: ', '')}
+            {plot.short || plot.label.replace('Reserved plot: ', '')}
           </text>
         </g>
       );
@@ -186,13 +186,91 @@ const statusStroke: Record<string, string> = {
   </div>
 </div>
 
-<script type="module" is:inline>
+<!-- Reserved-plot recruitment modal -->
+<div
+  id="plot-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-eai-navy/70 px-5"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="plot-modal-title"
+>
+  <div class="bg-eai-bone max-w-lg w-full p-6 border border-eai-blueprint/40 shadow-2xl">
+    <div class="flex items-start justify-between gap-4">
+      <p class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-gold">
+        Reserved plot
+      </p>
+      <button id="plot-modal-close" class="text-eai-blueprint hover:text-eai-navy text-xl leading-none" aria-label="Close">&times;</button>
+    </div>
+    <h3 id="plot-modal-title" class="font-serif text-2xl text-eai-navy mt-1"></h3>
+    <p id="plot-modal-why" class="mt-3 text-sm leading-relaxed text-eai-navy/85"></p>
+    <div class="mt-5 flex flex-wrap items-center gap-3">
+      <a
+        id="plot-modal-cta"
+        href="mailto:campus-interest@eighthanchor.org"
+        class="inline-flex items-center gap-2 bg-eai-navy text-eai-parchment px-4 py-2 text-sm hover:bg-eai-green transition"
+      >
+        <span id="plot-modal-cta-label">Help break ground</span>
+        <span aria-hidden="true">→</span>
+      </a>
+      <button id="plot-modal-close-2" class="text-sm text-eai-blueprint hover:text-eai-navy underline decoration-eai-blueprint/40">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module" is:inline define:vars={{ plots: reservedPlots }}>
   document.querySelectorAll('.building-footprint').forEach((el) => {
     el.addEventListener('click', () => {
       const id = el.getAttribute('data-building-id');
-      if (!id || id.startsWith('reserved-')) return;
+      if (!id) return;
       const target = document.getElementById(`building-${id}`);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
+  });
+
+  const modal = document.getElementById('plot-modal');
+  const title = document.getElementById('plot-modal-title');
+  const why = document.getElementById('plot-modal-why');
+  const cta = document.getElementById('plot-modal-cta');
+  const ctaLabel = document.getElementById('plot-modal-cta-label');
+
+  function openPlot(id) {
+    const p = plots.find((p) => p.id === id);
+    if (!p) return;
+    title.textContent = p.short || p.label.replace('Reserved plot: ', '');
+    why.textContent = p.why || '';
+    ctaLabel.textContent = p.cta || 'Help break ground';
+    const subject = encodeURIComponent(p.contactSubject || p.label);
+    cta.href = `mailto:campus-interest@eighthanchor.org?subject=${subject}`;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  function closePlot() {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  document.querySelectorAll('.reserved-plot').forEach((el) => {
+    el.addEventListener('click', () => {
+      const id = el.getAttribute('data-plot-id');
+      if (id) openPlot(id);
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const id = el.getAttribute('data-plot-id');
+        if (id) openPlot(id);
+      }
+    });
+  });
+
+  document.getElementById('plot-modal-close')?.addEventListener('click', closePlot);
+  document.getElementById('plot-modal-close-2')?.addEventListener('click', closePlot);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closePlot();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePlot();
   });
 </script>

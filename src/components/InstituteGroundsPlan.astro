@@ -30,7 +30,7 @@ const campusById = Object.fromEntries(futureCampuses.map((c) => [c.id, c]));
 const placed = nodes.map((n) => ({ ...n, ...pos(n.col, n.row), data: campusById[n.id] }));
 const active = placed.find((p) => p.data?.status === 'active')!;
 ---
-<section class="bg-eai-bone">
+<section id="institute-grounds-plan" class="bg-eai-bone">
   <div class="mx-auto max-w-6xl px-5 py-20 md:py-24">
     <div class="flex items-baseline justify-between flex-wrap gap-3 mb-6">
       <div>
@@ -139,18 +139,18 @@ const active = placed.find((p) => p.data?.status === 'active')!;
       <button id="campus-modal-close" class="text-eai-blueprint hover:text-eai-navy text-xl leading-none" aria-label="Close">&times;</button>
     </div>
     <h3 id="campus-modal-title" class="font-serif text-2xl text-eai-navy mt-1"></h3>
-    <p id="campus-modal-blurb" class="mt-3 text-sm leading-relaxed text-eai-navy/85"></p>
     <p class="mt-3 text-xs leading-relaxed text-eai-blueprint">
       <span class="font-medium text-eai-navy">Why this campus belongs in the Institute:</span>
-      <span id="campus-modal-recruit"></span>
+      <span id="campus-modal-why"></span>
     </p>
     <div class="mt-5 flex flex-wrap items-center gap-3">
       <a
-        id="campus-modal-mailto"
-        href="mailto:institute@eighthanchor.org"
+        id="campus-modal-cta"
+        href="mailto:campus-interest@eighthanchor.org"
         class="inline-flex items-center gap-2 bg-eai-navy text-eai-parchment px-4 py-2 text-sm hover:bg-eai-green transition"
       >
-        Express interest
+        <span id="campus-modal-cta-label">Express interest in founding this campus</span>
+        <span aria-hidden="true">→</span>
       </a>
       <button id="campus-modal-close-2" class="text-sm text-eai-blueprint hover:text-eai-navy underline decoration-eai-blueprint/40">
         Close
@@ -162,10 +162,10 @@ const active = placed.find((p) => p.data?.status === 'active')!;
 <script type="module" is:inline define:vars={{ campuses: futureCampuses }}>
   const modal = document.getElementById('campus-modal');
   const title = document.getElementById('campus-modal-title');
-  const blurb = document.getElementById('campus-modal-blurb');
-  const recruit = document.getElementById('campus-modal-recruit');
+  const why = document.getElementById('campus-modal-why');
   const status = document.getElementById('campus-modal-status');
-  const mailto = document.getElementById('campus-modal-mailto');
+  const cta = document.getElementById('campus-modal-cta');
+  const ctaLabel = document.getElementById('campus-modal-cta-label');
 
   function open(id) {
     const c = campuses.find((c) => c.id === id);
@@ -175,13 +175,13 @@ const active = placed.find((p) => p.data?.status === 'active')!;
       return;
     }
     title.textContent = c.name;
-    blurb.textContent = c.blurb;
-    recruit.textContent = ' ' + c.recruit;
-    status.textContent =
-      c.status === 'reserved' ? 'Reserved' :
-      c.status === 'under-formation' ? 'Under formation' : 'Future';
+    why.textContent = ' ' + (c.why || '');
+    status.textContent = c.statusText ||
+      (c.status === 'reserved' ? 'Reserved' :
+       c.status === 'under-formation' ? 'Under formation' : 'Future');
+    ctaLabel.textContent = c.cta || 'Express interest in founding this campus';
     const subject = encodeURIComponent(c.contactSubject || c.name);
-    mailto.href = `mailto:institute@eighthanchor.org?subject=${subject}`;
+    cta.href = `mailto:campus-interest@eighthanchor.org?subject=${subject}`;
     modal.classList.remove('hidden');
     modal.classList.add('flex');
   }

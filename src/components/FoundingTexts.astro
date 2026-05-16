@@ -37,9 +37,11 @@ import { foundingTexts } from '../data/foundingTexts.js';
           <p class="text-sm leading-relaxed text-eai-navy/85 mt-5">{t.summary}</p>
           <a
             href={t.href}
+            target="_blank"
+            rel="noopener"
             class="mt-5 inline-flex items-center gap-2 self-start text-sm font-medium text-eai-navy border-b border-eai-gold pb-0.5 hover:text-eai-gold transition"
           >
-            Read at the Library
+            {t.cta || 'Read at the Library'}
             <span aria-hidden="true">→</span>
           </a>
         </article>

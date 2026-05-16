@@ -7,6 +7,7 @@ export interface Props {
     name: string;
     short: string;
     status: 'active' | 'allied' | 'chapter' | 'reserved' | 'under-formation';
+    statusText?: string;
     role: string;
     domain: string;
     href: string;
@@ -15,7 +16,7 @@ export interface Props {
   };
 }
 const { building } = Astro.props;
-const statusLabel = {
+const statusLabel = building.statusText || {
   active: 'Active',
   allied: 'Allied',
   chapter: 'Chapter',
@@ -36,7 +37,7 @@ const isPlaceholder = building.href.startsWith('#');
   </div>
   <h3 class="font-serif text-xl text-eai-navy leading-snug">{building.name}</h3>
   <p class="font-mono text-[10px] tracking-widest uppercase text-eai-gold mt-2">
-    {statusLabel} · {building.role}
+    {building.statusText ? statusLabel : `${statusLabel} · ${building.role}`}
   </p>
   <p class="text-sm text-eai-navy/85 mt-3 leading-relaxed flex-1">{building.whatToDo}</p>
   <p class="font-mono text-[11px] text-eai-blueprint mt-3">{building.domain}</p>
