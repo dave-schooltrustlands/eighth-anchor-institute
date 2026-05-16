@@ -1,0 +1,24 @@
+{
+  "name": "eighth-anchor-institute",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "The Eighth Anchor Institute for Intergenerational Trust Design — eighthanchor.org",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "smoke": "node scripts/smoke-test-eai-v1.mjs"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^5.18.1",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19"
+  }
+}

@@ -1,0 +1,49 @@
+---
+// DELTA — Founding texts band. Surface "Schools of the Republic" and "The Eighth Anchor".
+import { foundingTexts } from '../data/foundingTexts.js';
+---
+<section id="founding-texts" class="bg-eai-parchment">
+  <div class="mx-auto max-w-6xl px-5 py-20 md:py-24">
+    <div class="flex items-baseline justify-between flex-wrap gap-3 mb-8">
+      <div>
+        <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-eai-gold mb-1">
+          Founding texts
+        </p>
+        <h2 class="font-serif text-3xl md:text-4xl text-eai-navy">The framework, in two books</h2>
+      </div>
+      <p class="text-sm text-eai-blueprint max-w-md">
+        Primary scholarship of the discipline. Read at the Library.
+      </p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      {foundingTexts.map((t) => (
+        <article class="bg-eai-bone border border-eai-blueprint/25 p-6 md:p-7 flex flex-col">
+          <div class="flex items-start gap-5">
+            <!-- Cover placeholder — blueprint-spine card -->
+            <div class="shrink-0 w-24 h-36 bg-eai-navy text-eai-parchment border border-eai-gold/40 flex flex-col items-center justify-center text-center p-2 shadow-md">
+              <p class="font-mono text-[8px] tracking-[0.18em] uppercase text-eai-gold mb-1">EAI</p>
+              <p class="font-serif text-[11px] leading-tight">{t.title}</p>
+              <p class="font-mono text-[7px] mt-2 text-eai-parchment/60">{t.author}</p>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-serif text-2xl text-eai-navy leading-snug">{t.title}</h3>
+              <p class="text-eai-blueprint font-serif italic mt-1">{t.subtitle}</p>
+              <p class="font-mono text-[10px] tracking-widest uppercase text-eai-blueprint/70 mt-2">
+                by {t.author}
+              </p>
+            </div>
+          </div>
+          <p class="text-sm leading-relaxed text-eai-navy/85 mt-5">{t.summary}</p>
+          <a
+            href={t.href}
+            class="mt-5 inline-flex items-center gap-2 self-start text-sm font-medium text-eai-navy border-b border-eai-gold pb-0.5 hover:text-eai-gold transition"
+          >
+            Read at the Library
+            <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

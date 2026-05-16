@@ -1,0 +1,66 @@
+---
+// ZETA — School Trust Campus page.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SchoolTrustGroundsPlan from '../../components/SchoolTrustGroundsPlan.astro';
+import BuildingCard from '../../components/BuildingCard.astro';
+import CampusLegend from '../../components/CampusLegend.astro';
+import GovernanceNote from '../../components/GovernanceNote.astro';
+import { buildings } from '../../data/schoolTrustCampus.js';
+---
+<BaseLayout
+  title="School Trust Campus — The Eighth Anchor Institute"
+  description="The first working campus of The Eighth Anchor Institute. Library, ASTL National, OASTL, ORWW — organized around the 240-year school-trust record."
+>
+  <!-- Hero -->
+  <section class="bg-eai-navy text-eai-parchment">
+    <div class="mx-auto max-w-4xl px-5 py-20 md:py-24">
+      <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-eai-gold mb-4">
+        Campus №1
+      </p>
+      <h1 class="font-serif text-4xl md:text-5xl text-eai-bone leading-tight">
+        School Trust Campus
+      </h1>
+      <p class="font-serif italic text-eai-parchment/85 text-xl mt-3">
+        The first working campus of The Eighth Anchor Institute.
+      </p>
+      <div class="prose prose-invert max-w-none mt-8 text-eai-parchment/90 leading-relaxed">
+        <p>
+          The 240-year school-trust record runs across more than thirty states.
+          It is the only multi-generational fiduciary experiment with enough
+          public data to teach the discipline. The campus is organized as
+          four working buildings — an archive, a national coalition, a state
+          chapter, and an allied field-research station — plus reserved plots
+          for the next state chapters.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grounds plan -->
+  <section class="bg-eai-bone">
+    <div class="mx-auto max-w-6xl px-5 py-16 md:py-20">
+      <div class="flex items-baseline justify-between flex-wrap gap-3 mb-6">
+        <div>
+          <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-eai-gold mb-1">
+            The Grounds Plan
+          </p>
+          <h2 class="font-serif text-3xl text-eai-navy">Four buildings, three reserved plots</h2>
+        </div>
+        <p class="text-sm text-eai-blueprint max-w-md">
+          Click a building footprint to jump to its card. Paths are labeled by
+          the relationship between organizations.
+        </p>
+      </div>
+
+      <SchoolTrustGroundsPlan />
+
+      <!-- Building cards -->
+      <div class="grid gap-6 md:grid-cols-2 mt-10">
+        {buildings.map((b) => <BuildingCard building={b} />)}
+      </div>
+
+      <CampusLegend variant="school-trust" />
+      <GovernanceNote />
+    </div>
+  </section>
+</BaseLayout>

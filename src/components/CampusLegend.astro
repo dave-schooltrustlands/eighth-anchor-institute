@@ -1,0 +1,73 @@
+---
+// THETA — Status taxonomy legend. Reusable across Institute Grounds Plan and
+// School Trust Campus Grounds Plan. Items can be filtered per page.
+export interface Props {
+  variant?: 'institute' | 'school-trust';
+}
+
+const { variant = 'school-trust' } = Astro.props;
+
+const allItems = [
+  { id: 'active', label: 'Active building', desc: 'In operation today.', kind: 'active' },
+  { id: 'allied', label: 'Allied building', desc: 'Independent ally; shared substrate.', kind: 'allied' },
+  { id: 'chapter', label: 'Chapter building', desc: 'State chapter of the coalition.', kind: 'chapter' },
+  { id: 'reserved', label: 'Reserved plot', desc: 'Identified plot; not yet under formation.', kind: 'reserved' },
+  { id: 'under-formation', label: 'Under formation', desc: 'Active organizing work.', kind: 'under-formation' },
+  { id: 'future', label: 'Future campus', desc: 'Distant, schematic only.', kind: 'future' },
+];
+
+const items =
+  variant === 'institute'
+    ? allItems.filter((i) => ['active', 'reserved', 'under-formation', 'future'].includes(i.id))
+    : allItems;
+---
+<aside class="mt-8 border border-eai-blueprint/30 bg-eai-bone/60 px-5 py-4">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="font-mono text-[11px] tracking-[0.2em] uppercase text-eai-blueprint">Legend</h3>
+    <span class="font-mono text-[10px] text-eai-blueprint/70">Status taxonomy</span>
+  </div>
+  <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {items.map((item) => (
+      <li class="flex items-start gap-3">
+        <span class={`legend-swatch swatch-${item.kind} mt-0.5 shrink-0`} aria-hidden="true"></span>
+        <span class="text-sm leading-snug">
+          <span class="font-medium text-eai-navy">{item.label}</span>
+          <span class="block text-eai-blueprint text-xs">{item.desc}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+</aside>
+
+<style>
+  .legend-swatch {
+    width: 18px;
+    height: 14px;
+    display: inline-block;
+    border: 1px solid #536879;
+  }
+  .swatch-active {
+    background: #B88A2E;
+    border-color: #B88A2E;
+  }
+  .swatch-allied {
+    background: transparent;
+    border: 1px solid #536879;
+  }
+  .swatch-chapter {
+    background: rgba(184, 138, 46, 0.18);
+    border: 1px solid #B88A2E;
+  }
+  .swatch-reserved {
+    background: transparent;
+    border: 1px dashed #536879;
+  }
+  .swatch-under-formation {
+    background: rgba(83, 104, 121, 0.12);
+    border: 1px dashed #536879;
+  }
+  .swatch-future {
+    background: transparent;
+    border: 1px solid rgba(83, 104, 121, 0.35);
+  }
+</style>

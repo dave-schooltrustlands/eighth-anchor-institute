@@ -1,0 +1,87 @@
+---
+// ETA — Building card for the School Trust Campus.
+export interface Props {
+  building: {
+    id: string;
+    address: string;
+    name: string;
+    short: string;
+    status: 'active' | 'allied' | 'chapter' | 'reserved' | 'under-formation';
+    role: string;
+    domain: string;
+    href: string;
+    whatToDo: string;
+    cta: string;
+  };
+}
+const { building } = Astro.props;
+const statusLabel = {
+  active: 'Active',
+  allied: 'Allied',
+  chapter: 'Chapter',
+  reserved: 'Reserved',
+  'under-formation': 'Under formation',
+}[building.status];
+
+const swatchClass = `card-swatch swatch-${building.status}`;
+const isExternal = building.href.startsWith('http');
+const isPlaceholder = building.href.startsWith('#');
+---
+<article id={`building-${building.id}`} class="border border-eai-blueprint/30 bg-eai-bone p-5 flex flex-col">
+  <div class="flex items-baseline gap-3 mb-1">
+    <span class={swatchClass} aria-hidden="true"></span>
+    <p class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-blueprint">
+      {building.address}
+    </p>
+  </div>
+  <h3 class="font-serif text-xl text-eai-navy leading-snug">{building.name}</h3>
+  <p class="font-mono text-[10px] tracking-widest uppercase text-eai-gold mt-2">
+    {statusLabel} · {building.role}
+  </p>
+  <p class="text-sm text-eai-navy/85 mt-3 leading-relaxed flex-1">{building.whatToDo}</p>
+  <p class="font-mono text-[11px] text-eai-blueprint mt-3">{building.domain}</p>
+  {isPlaceholder ? (
+    <span class="mt-4 inline-flex items-center gap-2 self-start text-sm text-eai-blueprint/70 italic">
+      {building.cta} — site forthcoming
+    </span>
+  ) : (
+    <a
+      href={building.href}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener' : undefined}
+      class="mt-4 inline-flex items-center gap-2 self-start text-sm font-medium text-eai-navy border-b border-eai-gold pb-0.5 hover:text-eai-gold transition"
+    >
+      {building.cta}
+      <span aria-hidden="true">→</span>
+    </a>
+  )}
+</article>
+
+<style>
+  .card-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #536879;
+  }
+  .swatch-active {
+    background: #B88A2E;
+    border-color: #B88A2E;
+  }
+  .swatch-allied {
+    background: transparent;
+    border: 1px solid #536879;
+  }
+  .swatch-chapter {
+    background: rgba(184, 138, 46, 0.18);
+    border: 1px solid #B88A2E;
+  }
+  .swatch-reserved {
+    background: transparent;
+    border: 1px dashed #536879;
+  }
+  .swatch-under-formation {
+    background: rgba(83, 104, 121, 0.12);
+    border: 1px dashed #536879;
+  }
+</style>

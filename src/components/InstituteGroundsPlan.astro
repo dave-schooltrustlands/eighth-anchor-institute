@@ -1,0 +1,218 @@
+---
+// GAMMA — Institute Grounds Plan. Schematic future-campus diagram.
+// NOT buildings — nodes. Blueprint / surveyor's register.
+import { futureCampuses } from '../data/campuses.js';
+import CampusLegend from './CampusLegend.astro';
+import GovernanceNote from './GovernanceNote.astro';
+
+// Node geometry on a 12-column blueprint grid. We render an SVG schematic.
+const nodes = [
+  { id: 'school-trust',     col: 6, row: 2 },  // top center — active
+  { id: 'ai-governance',    col: 2, row: 5 },
+  { id: 'climate-adaptation', col: 5, row: 6 },
+  { id: 'treaty-trust',     col: 9, row: 5 },
+  { id: 'endowments',       col: 3, row: 8 },
+  { id: 'sovereign-wealth', col: 10, row: 8 },
+];
+
+const W = 1200;
+const H = 720;
+const COLS = 12;
+const ROWS = 10;
+const cellW = W / COLS;
+const cellH = H / ROWS;
+
+function pos(col: number, row: number) {
+  return { x: col * cellW, y: row * cellH };
+}
+
+const campusById = Object.fromEntries(futureCampuses.map((c) => [c.id, c]));
+const placed = nodes.map((n) => ({ ...n, ...pos(n.col, n.row), data: campusById[n.id] }));
+const active = placed.find((p) => p.data?.status === 'active')!;
+---
+<section class="bg-eai-bone">
+  <div class="mx-auto max-w-6xl px-5 py-20 md:py-24">
+    <div class="flex items-baseline justify-between flex-wrap gap-3 mb-6">
+      <div>
+        <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-eai-gold mb-1">
+          The Institute Grounds Plan
+        </p>
+        <h2 class="font-serif text-3xl md:text-4xl text-eai-navy">The discipline at full scope</h2>
+      </div>
+      <p class="text-sm text-eai-blueprint max-w-md">
+        One active campus today. Five reserved categories awaiting founding scholarship,
+        partners, and board.
+      </p>
+    </div>
+
+    <!-- Schematic plan -->
+    <div class="relative border border-eai-blueprint/40 bg-eai-parchment/40 bg-blueprint-grid">
+      <svg viewBox={`0 0 ${W} ${H}`} class="w-full h-auto" role="img" aria-label="Institute Grounds Plan — schematic future campuses">
+        <!-- Principal meridian / baseline (PLSS register) -->
+        <line x1="0" y1={H / 2} x2={W} y2={H / 2} stroke="#536879" stroke-width="0.6" stroke-dasharray="2 6" />
+        <line x1={W / 2} y1="0" x2={W / 2} y2={H} stroke="#536879" stroke-width="0.6" stroke-dasharray="2 6" />
+
+        <!-- Light radial connectors from active node to reserved nodes -->
+        {placed.filter((p) => p.id !== active.id).map((p) => (
+          <line
+            x1={active.x}
+            y1={active.y}
+            x2={p.x}
+            y2={p.y}
+            stroke="#536879"
+            stroke-width="0.5"
+            stroke-dasharray="3 5"
+            opacity="0.55"
+          />
+        ))}
+
+        <!-- Node groups -->
+        {placed.map((p) => {
+          const c = p.data;
+          if (!c) return null;
+          const isActive = c.status === 'active';
+          const isReserved = c.status === 'reserved';
+          const isUnderFormation = c.status === 'under-formation';
+          const w = 220;
+          const h = 78;
+          const rx = p.x - w / 2;
+          const ry = p.y - h / 2;
+          return (
+            <g class="campus-node" data-campus-id={c.id} style="cursor: pointer">
+              <rect
+                x={rx}
+                y={ry}
+                width={w}
+                height={h}
+                fill={isActive ? '#B88A2E' : 'transparent'}
+                stroke={isActive ? '#B88A2E' : '#536879'}
+                stroke-width={isActive ? '1.2' : '0.8'}
+                stroke-dasharray={isReserved || isUnderFormation ? '4 3' : 'none'}
+              />
+              <text
+                x={p.x}
+                y={p.y - 6}
+                text-anchor="middle"
+                font-family="IBM Plex Mono, monospace"
+                font-size="11"
+                letter-spacing="2.2"
+                fill={isActive ? '#0E1A24' : '#536879'}
+                style="text-transform: uppercase"
+              >
+                {isActive ? 'Active' : 'Reserved'}
+              </text>
+              <text
+                x={p.x}
+                y={p.y + 14}
+                text-anchor="middle"
+                font-family="Cormorant Garamond, serif"
+                font-size="18"
+                fill={isActive ? '#0E1A24' : '#0E1A24'}
+              >
+                {c.name}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <!-- Plan corner annotations -->
+      <div class="absolute top-2 left-2 font-mono text-[9px] tracking-widest text-eai-blueprint/70 uppercase">Plan №1 — Institute</div>
+      <div class="absolute bottom-2 right-2 font-mono text-[9px] tracking-widest text-eai-blueprint/70 uppercase">Schematic · v1 · 2026</div>
+    </div>
+
+    <CampusLegend variant="institute" />
+    <GovernanceNote />
+  </div>
+</section>
+
+<!-- Modal for reserved nodes -->
+<div
+  id="campus-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-eai-navy/70 px-5"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="campus-modal-title"
+>
+  <div class="bg-eai-bone max-w-lg w-full p-6 border border-eai-blueprint/40 shadow-2xl">
+    <div class="flex items-start justify-between gap-4">
+      <p class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-gold" id="campus-modal-status">Reserved</p>
+      <button id="campus-modal-close" class="text-eai-blueprint hover:text-eai-navy text-xl leading-none" aria-label="Close">&times;</button>
+    </div>
+    <h3 id="campus-modal-title" class="font-serif text-2xl text-eai-navy mt-1"></h3>
+    <p id="campus-modal-blurb" class="mt-3 text-sm leading-relaxed text-eai-navy/85"></p>
+    <p class="mt-3 text-xs leading-relaxed text-eai-blueprint">
+      <span class="font-medium text-eai-navy">Why this campus belongs in the Institute:</span>
+      <span id="campus-modal-recruit"></span>
+    </p>
+    <div class="mt-5 flex flex-wrap items-center gap-3">
+      <a
+        id="campus-modal-mailto"
+        href="mailto:institute@eighthanchor.org"
+        class="inline-flex items-center gap-2 bg-eai-navy text-eai-parchment px-4 py-2 text-sm hover:bg-eai-green transition"
+      >
+        Express interest
+      </a>
+      <button id="campus-modal-close-2" class="text-sm text-eai-blueprint hover:text-eai-navy underline decoration-eai-blueprint/40">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module" is:inline define:vars={{ campuses: futureCampuses }}>
+  const modal = document.getElementById('campus-modal');
+  const title = document.getElementById('campus-modal-title');
+  const blurb = document.getElementById('campus-modal-blurb');
+  const recruit = document.getElementById('campus-modal-recruit');
+  const status = document.getElementById('campus-modal-status');
+  const mailto = document.getElementById('campus-modal-mailto');
+
+  function open(id) {
+    const c = campuses.find((c) => c.id === id);
+    if (!c) return;
+    if (c.status === 'active' && c.href) {
+      window.location.href = c.href;
+      return;
+    }
+    title.textContent = c.name;
+    blurb.textContent = c.blurb;
+    recruit.textContent = ' ' + c.recruit;
+    status.textContent =
+      c.status === 'reserved' ? 'Reserved' :
+      c.status === 'under-formation' ? 'Under formation' : 'Future';
+    const subject = encodeURIComponent(c.contactSubject || c.name);
+    mailto.href = `mailto:institute@eighthanchor.org?subject=${subject}`;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function close() {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  document.querySelectorAll('.campus-node').forEach((el) => {
+    el.addEventListener('click', () => {
+      const id = el.getAttribute('data-campus-id');
+      if (id) open(id);
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const id = el.getAttribute('data-campus-id');
+        if (id) open(id);
+      }
+    });
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+  });
+
+  document.getElementById('campus-modal-close')?.addEventListener('click', close);
+  document.getElementById('campus-modal-close-2')?.addEventListener('click', close);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+</script>

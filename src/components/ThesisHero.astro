@@ -1,0 +1,62 @@
+---
+// ALPHA — Homepage thesis hero. Typography-driven, no map.
+---
+<section class="relative overflow-hidden bg-eai-navy text-eai-parchment">
+  <!-- Anchor-geometry SVG motif at low opacity -->
+  <svg
+    aria-hidden="true"
+    class="absolute inset-0 w-full h-full opacity-[0.07] pointer-events-none"
+    viewBox="0 0 1200 700"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <defs>
+      <pattern id="anchor-grid" width="80" height="80" patternUnits="userSpaceOnUse">
+        <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#B88A2E" stroke-width="0.4" />
+      </pattern>
+    </defs>
+    <rect width="1200" height="700" fill="url(#anchor-grid)" />
+    <!-- Stylized anchor geometry -->
+    <g stroke="#B88A2E" stroke-width="1" fill="none">
+      <circle cx="600" cy="350" r="240" />
+      <circle cx="600" cy="350" r="180" />
+      <circle cx="600" cy="350" r="120" />
+      <line x1="600" y1="110" x2="600" y2="590" />
+      <line x1="360" y1="350" x2="840" y2="350" />
+      <path d="M 600 230 Q 480 350 600 470 Q 720 350 600 230 Z" />
+    </g>
+  </svg>
+
+  <div class="relative mx-auto max-w-5xl px-5 py-24 md:py-32 text-center">
+    <p class="font-mono text-[11px] md:text-xs tracking-[0.32em] uppercase text-eai-gold mb-5">
+      The Eighth Anchor Institute
+    </p>
+    <p class="font-sans text-base md:text-lg text-eai-parchment/80 tracking-wide mb-10">
+      for Intergenerational Trust Design
+    </p>
+    <h1 class="font-serif text-[2.4rem] leading-[1.12] md:text-[3.6rem] md:leading-[1.08] font-medium text-eai-bone max-w-3xl mx-auto">
+      Long-horizon trusts fail when obligation loses its architecture.
+    </h1>
+
+    <div class="mt-14 flex flex-wrap items-center justify-center gap-3 md:gap-4">
+      <a
+        href="/campus/school-trust/"
+        class="inline-flex items-center gap-2 bg-eai-gold text-eai-navy px-5 py-3 text-sm font-medium tracking-wide hover:bg-eai-parchment transition"
+      >
+        Enter the School Trust Campus
+        <span aria-hidden="true">→</span>
+      </a>
+      <a
+        href="#founding-texts"
+        class="inline-flex items-center gap-2 border border-eai-parchment/40 text-eai-parchment px-5 py-3 text-sm tracking-wide hover:border-eai-gold hover:text-eai-gold transition"
+      >
+        Read the founding framework
+      </a>
+      <a
+        href="#future-campuses"
+        class="inline-flex items-center gap-2 border border-eai-parchment/40 text-eai-parchment px-5 py-3 text-sm tracking-wide hover:border-eai-gold hover:text-eai-gold transition"
+      >
+        See future campuses
+      </a>
+    </div>
+  </div>
+</section>

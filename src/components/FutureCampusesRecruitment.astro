@@ -1,0 +1,43 @@
+---
+// EPSILON — Future campuses recruitment band.
+// Sober — "Reserved — under formation" beats "Coming soon!".
+import { futureCampuses } from '../data/campuses.js';
+const reserved = futureCampuses.filter((c) => c.status !== 'active');
+---
+<section id="future-campuses" class="bg-eai-bone">
+  <div class="mx-auto max-w-6xl px-5 py-20 md:py-24">
+    <div class="flex items-baseline justify-between flex-wrap gap-3 mb-8">
+      <div>
+        <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-eai-gold mb-1">
+          Future campuses
+        </p>
+        <h2 class="font-serif text-3xl md:text-4xl text-eai-navy">Reserved — under formation</h2>
+      </div>
+      <p class="text-sm text-eai-blueprint max-w-md">
+        Five categories of long-horizon trust on the Institute's grounds plan.
+        Founding scholarship, state experts, board candidates, and foundation
+        partners welcome.
+      </p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {reserved.map((c) => (
+        <article class="border border-eai-blueprint/30 bg-eai-parchment/60 p-5 flex flex-col">
+          <p class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-blueprint mb-2">
+            Reserved — under formation
+          </p>
+          <h3 class="font-serif text-xl text-eai-navy leading-snug">{c.name}</h3>
+          <p class="text-sm text-eai-navy/85 mt-3 leading-relaxed flex-1">{c.blurb}</p>
+          <p class="text-xs text-eai-blueprint mt-3 leading-relaxed">{c.recruit}</p>
+          <a
+            href={`mailto:institute@eighthanchor.org?subject=${encodeURIComponent(c.contactSubject)}`}
+            class="mt-4 inline-flex items-center gap-2 self-start text-sm text-eai-navy border-b border-eai-gold pb-0.5 hover:text-eai-gold transition"
+          >
+            Express interest
+            <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

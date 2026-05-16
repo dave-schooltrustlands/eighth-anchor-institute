@@ -1,0 +1,66 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'The Eighth Anchor Institute for Intergenerational Trust Design.',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en" class="bg-eai-bone text-eai-navy">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+    />
+  </head>
+  <body class="font-sans antialiased min-h-screen flex flex-col">
+    <header class="border-b border-eai-blueprint/20 bg-eai-bone/95 backdrop-blur sticky top-0 z-30">
+      <div class="mx-auto max-w-6xl px-5 py-3 flex items-center justify-between gap-4">
+        <a href="/" class="flex items-baseline gap-3">
+          <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-gold">The Eighth Anchor Institute</span>
+        </a>
+        <nav class="text-sm flex items-center gap-5">
+          <a href="/" class="hover:text-eai-gold">Institute</a>
+          <a href="/campus/school-trust/" class="hover:text-eai-gold">School Trust Campus</a>
+        </nav>
+      </div>
+    </header>
+    <main class="flex-1">
+      <slot />
+    </main>
+    <footer class="mt-24 border-t border-eai-blueprint/20 bg-eai-navy text-eai-parchment">
+      <div class="mx-auto max-w-6xl px-5 py-10 grid gap-6 md:grid-cols-3 text-sm">
+        <div>
+          <div class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-gold mb-2">The Eighth Anchor Institute</div>
+          <p class="text-eai-parchment/80 leading-relaxed">
+            for Intergenerational Trust Design. A working institution organized around the 240-year school-trust record and the next generation of long-horizon trusts.
+          </p>
+        </div>
+        <div>
+          <div class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-parchment/60 mb-2">Governance</div>
+          <p class="text-eai-parchment/80 leading-relaxed">
+            Campus maps show intellectual and operating relationships. They do not imply legal merger or control among independent organizations.
+          </p>
+        </div>
+        <div>
+          <div class="font-mono text-[10px] tracking-[0.22em] uppercase text-eai-parchment/60 mb-2">Contact</div>
+          <p class="text-eai-parchment/80 leading-relaxed">
+            <a href="mailto:institute@eighthanchor.org" class="underline decoration-eai-gold/60 hover:text-eai-gold">institute@eighthanchor.org</a>
+          </p>
+          <p class="text-eai-parchment/50 mt-2 text-xs">eighthanchor.org</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
