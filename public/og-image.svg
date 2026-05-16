@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="The Eighth Anchor Institute for Intergenerational Trust Design">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#536879" stroke-width="0.5" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <!-- Bone background -->
+  <rect width="1200" height="630" fill="#FAF8F1"/>
+
+  <!-- Faint blueprint grid -->
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- PLSS baselines -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#536879" stroke-width="0.7" stroke-dasharray="2 6" opacity="0.45"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#536879" stroke-width="0.7" stroke-dasharray="2 6" opacity="0.45"/>
+
+  <!-- Corner section ticks -->
+  <g stroke="#536879" stroke-width="1.1" opacity="0.55">
+    <line x1="40" y1="40" x2="62" y2="40"/>
+    <line x1="40" y1="40" x2="40" y2="62"/>
+    <line x1="1160" y1="40" x2="1138" y2="40"/>
+    <line x1="1160" y1="40" x2="1160" y2="62"/>
+    <line x1="40" y1="590" x2="62" y2="590"/>
+    <line x1="40" y1="590" x2="40" y2="568"/>
+    <line x1="1160" y1="590" x2="1138" y2="590"/>
+    <line x1="1160" y1="590" x2="1160" y2="568"/>
+  </g>
+
+  <!-- Top eyebrow rule -->
+  <line x1="80" y1="120" x2="240" y2="120" stroke="#B88A2E" stroke-width="1.2"/>
+  <text x="80" y="106" font-family="IBM Plex Mono, monospace" font-size="16" letter-spacing="3.4" fill="#B88A2E" style="text-transform: uppercase">For Intergenerational Trust Design</text>
+
+  <!-- Institute mark (compass-rose / anchor) -->
+  <g transform="translate(80, 168)">
+    <circle cx="22" cy="22" r="18" fill="none" stroke="#0E1A24" stroke-width="1.4"/>
+    <line x1="22" y1="2" x2="22" y2="42" stroke="#0E1A24" stroke-width="1"/>
+    <line x1="2" y1="22" x2="42" y2="22" stroke="#0E1A24" stroke-width="1"/>
+    <circle cx="22" cy="22" r="4.5" fill="#B88A2E"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="138" y="206" font-family="Cormorant Garamond, Georgia, serif" font-size="58" font-weight="600" fill="#0E1A24">The Eighth Anchor Institute</text>
+
+  <!-- Thesis -->
+  <text x="80" y="320" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="36" fill="#0E1A24">
+    <tspan x="80" dy="0">Long-horizon trusts fail when</tspan>
+    <tspan x="80" dy="46">obligation loses its architecture.</tspan>
+  </text>
+
+  <!-- Sub thesis -->
+  <text x="80" y="448" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#536879">
+    <tspan x="80" dy="0">We study the only 240-year record we have —</tspan>
+    <tspan x="80" dy="30">America's school trust lands — and apply it forward.</tspan>
+  </text>
+
+  <!-- Footer eyebrow -->
+  <line x1="80" y1="552" x2="200" y2="552" stroke="#536879" stroke-width="0.8"/>
+  <text x="80" y="582" font-family="IBM Plex Mono, monospace" font-size="14" letter-spacing="2.6" fill="#536879" style="text-transform: uppercase">eighthanchor.org</text>
+
+  <!-- Right-side schematic dots — five reserved + one active node -->
+  <g transform="translate(820, 200)">
+    <circle cx="0"   cy="0"   r="9" fill="#B88A2E"/>
+    <circle cx="120" cy="40"  r="6" fill="none" stroke="#536879" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle cx="-50" cy="90"  r="6" fill="none" stroke="#536879" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle cx="130" cy="140" r="6" fill="none" stroke="#536879" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle cx="-30" cy="200" r="6" fill="none" stroke="#536879" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle cx="140" cy="240" r="6" fill="none" stroke="#536879" stroke-width="1" stroke-dasharray="3 2"/>
+    <line x1="0" y1="0" x2="120" y2="40"  stroke="#536879" stroke-width="0.5" stroke-dasharray="3 4" opacity="0.55"/>
+    <line x1="0" y1="0" x2="-50" y2="90"  stroke="#536879" stroke-width="0.5" stroke-dasharray="3 4" opacity="0.55"/>
+    <line x1="0" y1="0" x2="130" y2="140" stroke="#536879" stroke-width="0.5" stroke-dasharray="3 4" opacity="0.55"/>
+    <line x1="0" y1="0" x2="-30" y2="200" stroke="#536879" stroke-width="0.5" stroke-dasharray="3 4" opacity="0.55"/>
+    <line x1="0" y1="0" x2="140" y2="240" stroke="#536879" stroke-width="0.5" stroke-dasharray="3 4" opacity="0.55"/>
+  </g>
+
+  <!-- Plan annotation -->
+  <text x="1118" y="582" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2.6" fill="#536879" style="text-transform: uppercase">Plan №1 — Institute</text>
+</svg>

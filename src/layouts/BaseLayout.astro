@@ -1,13 +1,31 @@
 ---
+import EAIUtilityBar from '../components/EAIUtilityBar.astro';
+
 export interface Props {
   title: string;
   description?: string;
+  /** Path of the current page on the site (e.g. "/" or "/campus/school-trust/"). Used for canonical + og:url. */
+  path?: string;
+  /** Optional OG title override; falls back to title. */
+  ogTitle?: string;
+  /** Optional OG description override; falls back to description. */
+  ogDescription?: string;
 }
+
+const SITE = 'https://eighthanchor.org';
 
 const {
   title,
   description = 'The Eighth Anchor Institute for Intergenerational Trust Design.',
+  path = Astro.url?.pathname || '/',
+  ogTitle,
+  ogDescription,
 } = Astro.props;
+
+const canonical = new URL(path, SITE).toString();
+const ogImage = new URL('/og-image.svg', SITE).toString();
+const resolvedOgTitle = ogTitle || title;
+const resolvedOgDescription = ogDescription || description;
 ---
 <!doctype html>
 <html lang="en" class="bg-eai-bone text-eai-navy">
@@ -17,6 +35,22 @@ const {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Eighth Anchor Institute" />
+    <meta property="og:title" content={resolvedOgTitle} />
+    <meta property="og:description" content={resolvedOgDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={resolvedOgTitle} />
+    <meta name="twitter:description" content={resolvedOgDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,6 +59,7 @@ const {
     />
   </head>
   <body class="font-sans antialiased min-h-screen flex flex-col">
+    <EAIUtilityBar />
     <header class="border-b border-eai-blueprint/20 bg-eai-bone/95 backdrop-blur sticky top-0 z-30">
       <div class="mx-auto max-w-6xl px-5 py-3 flex items-center justify-between gap-4">
         <a href="/" class="flex items-baseline gap-3">

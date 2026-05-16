@@ -1,0 +1,98 @@
+---
+// Archival landscape band.
+//
+// Subtle hero-strip between "Why this exists" and the Institute Grounds
+// Plan. Photography is accent here, not centerpiece — modest height,
+// dark navy gradient overlay so the band carries weight without
+// dominating the typography-and-diagram-forward composition. The
+// caption alone teaches a new visitor how the campus's allied-building
+// architecture works.
+---
+<section class="archival-band" aria-label="Bald Mountain panorama, 1936">
+  <figure class="archival-band__figure">
+    <img
+      src="/images/orww/osborne-panoramic.jpg"
+      alt="Black-and-white 1936 Osborne fire-lookout panoramic photograph from Bald Mountain in Polk County, Oregon, showing layered ridgelines of the Coast Range stretching west toward the horizon."
+      loading="lazy"
+      decoding="async"
+      class="archival-band__img"
+    />
+    <div class="archival-band__overlay" aria-hidden="true"></div>
+    <figcaption class="archival-band__caption">
+      <span class="archival-band__eyebrow">From the allied archive</span>
+      <span class="archival-band__credit">
+        Bald Mountain Lookout, Polk County, Oregon, 1936. Western Oregon Osborne Photos archive,
+        courtesy <a href="http://orww.org" class="archival-band__source-link">ORWW Field Station</a>
+        &mdash; one of the campus's allied buildings.
+      </span>
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .archival-band {
+    background: #0E1A24;
+    border-top: 1px solid rgba(184, 138, 46, 0.15);
+    border-bottom: 1px solid rgba(184, 138, 46, 0.15);
+  }
+  .archival-band__figure {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+  }
+  @media (max-width: 768px) {
+    .archival-band__figure { height: 160px; }
+  }
+  .archival-band__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    filter: sepia(0.18) contrast(1.05);
+  }
+  .archival-band__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(14,26,36,0.25) 0%, rgba(14,26,36,0.05) 40%, rgba(14,26,36,0.85) 100%),
+      linear-gradient(to right, rgba(14,26,36,0.45) 0%, rgba(14,26,36,0.10) 30%, rgba(14,26,36,0.10) 70%, rgba(14,26,36,0.45) 100%);
+  }
+  .archival-band__caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 14px 1.25rem;
+    color: #F4EFE4;
+    max-width: 72rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .archival-band__eyebrow {
+    font-family: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #B88A2E;
+  }
+  .archival-band__credit {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(244, 239, 228, 0.92);
+    line-height: 1.45;
+  }
+  .archival-band__source-link {
+    color: #F4EFE4;
+    text-decoration: underline;
+    text-decoration-color: rgba(184, 138, 46, 0.55);
+    text-underline-offset: 2px;
+  }
+  .archival-band__source-link:hover { color: #B88A2E; }
+</style>

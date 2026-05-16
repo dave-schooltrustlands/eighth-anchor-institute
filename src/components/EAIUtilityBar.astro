@@ -1,0 +1,177 @@
+---
+// EAI Utility Bar — Institute variant.
+//
+// Matches ASTL v70's visual treatment (30px, near-black bg, cream text,
+// small uppercase mono type) so the bar reads consistently across the
+// campus. Differences from ASTL: the Institute is the parent, so the
+// left side says "you are at the Institute" (non-link) and the right
+// side lists the campus buildings as the sister-site dropdown.
+//
+// Icon: placeholder geometric SVG (compass-rose / "8" mark). Replace
+// with designed mark in a future iteration.
+const buildings = [
+  { label: 'The Library',         href: 'https://schooltrusts.net',       comingSoon: false },
+  { label: 'ASTL National',       href: 'https://schooltrustlands.net',   comingSoon: false },
+  { label: 'Oregon Chapter',      href: null,                              comingSoon: true  },
+  { label: 'ORWW Field Station',  href: 'http://orww.org',                 comingSoon: false },
+];
+---
+<div class="eai-utility-bar" data-component="eai-utility-bar">
+  <div class="eai-utility-bar__inner">
+    <div class="eai-utility-bar__left" aria-label="You are at The Eighth Anchor Institute">
+      <svg
+        class="eai-utility-bar__mark"
+        viewBox="0 0 24 24"
+        width="14"
+        height="14"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <!-- Compass-rose / anchor placeholder mark -->
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.1" />
+        <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="currentColor" stroke-width="0.8" />
+        <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="currentColor" stroke-width="0.8" />
+        <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+      </svg>
+      <span class="eai-utility-bar__name">The Eighth Anchor Institute</span>
+      <span class="eai-utility-bar__you-are-here" aria-hidden="true">— you are here</span>
+    </div>
+
+    <div class="eai-utility-bar__right">
+      <details class="eai-utility-bar__dropdown">
+        <summary>
+          Campus buildings
+          <span class="eai-utility-bar__chev" aria-hidden="true">▾</span>
+        </summary>
+        <ul class="eai-utility-bar__menu" role="menu">
+          {buildings.map((b) => (
+            <li role="none">
+              {b.comingSoon || !b.href ? (
+                <span class="eai-utility-bar__item eai-utility-bar__item--coming-soon" role="menuitem" aria-disabled="true">
+                  {b.label}
+                  <span class="eai-utility-bar__tag">coming soon</span>
+                </span>
+              ) : (
+                <a class="eai-utility-bar__item" href={b.href} role="menuitem">
+                  {b.label}
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </details>
+    </div>
+  </div>
+</div>
+
+<style>
+  .eai-utility-bar {
+    background: #0E1A24;
+    color: #F4EFE4;
+    border-bottom: 1px solid rgba(244, 239, 228, 0.10);
+    font-family: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 40;
+  }
+  .eai-utility-bar__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .eai-utility-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .eai-utility-bar__mark {
+    color: #B88A2E;
+    flex-shrink: 0;
+  }
+  .eai-utility-bar__name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .eai-utility-bar__you-are-here {
+    color: rgba(244, 239, 228, 0.55);
+    margin-left: 0.25rem;
+  }
+  @media (max-width: 640px) {
+    .eai-utility-bar__you-are-here { display: none; }
+  }
+  .eai-utility-bar__right { display: flex; align-items: center; }
+  .eai-utility-bar__dropdown { position: relative; }
+  .eai-utility-bar__dropdown > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #F4EFE4;
+    padding: 4px 0;
+  }
+  .eai-utility-bar__dropdown > summary::-webkit-details-marker { display: none; }
+  .eai-utility-bar__dropdown > summary:hover { color: #B88A2E; }
+  .eai-utility-bar__chev {
+    font-size: 9px;
+    letter-spacing: 0;
+    transition: transform 120ms ease;
+  }
+  .eai-utility-bar__dropdown[open] .eai-utility-bar__chev { transform: rotate(180deg); }
+  .eai-utility-bar__menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    min-width: 220px;
+    background: #0E1A24;
+    border: 1px solid rgba(244, 239, 228, 0.15);
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+  .eai-utility-bar__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 7px 14px;
+    color: #F4EFE4;
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+  a.eai-utility-bar__item:hover { background: rgba(244, 239, 228, 0.06); color: #B88A2E; }
+  .eai-utility-bar__item--coming-soon { color: rgba(244, 239, 228, 0.45); cursor: default; }
+  .eai-utility-bar__tag {
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    color: #B88A2E;
+    border: 1px solid rgba(184, 138, 46, 0.35);
+    padding: 1px 5px;
+  }
+</style>
+
+<script type="module" is:inline>
+  // Close the dropdown when clicking outside.
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.eai-utility-bar__dropdown[open]').forEach((d) => {
+      if (!d.contains(e.target)) d.removeAttribute('open');
+    });
+  });
+  // Close on Escape.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.eai-utility-bar__dropdown[open]').forEach((d) => d.removeAttribute('open'));
+    }
+  });
+</script>

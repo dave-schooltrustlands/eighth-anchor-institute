@@ -1,0 +1,52 @@
+[
+  {
+    "file": "twin-buttes-1933.jpg",
+    "source_url": "http://www.orww.org/ORWW_icons/ORWW_19330912_180-300-10_200.jpg",
+    "source_page": "http://www.orww.org/",
+    "credit": "Twin Buttes Lookout, Willamette National Forest, Lane County, 9-12-33. Photograph: Moe-Sorlin. Courtesy Oregon Websites & Watersheds Project (ORWW).",
+    "alt_text": "Black-and-white panoramic view of forested ridges in the Willamette National Forest, photographed from the Twin Buttes Lookout in 1933.",
+    "suggested_placement": [],
+    "note": "ORWW publishes this image only as a banner composite with their organization name, logo, and 'Online Tools...' overlay text rendered into the JPG. No clean version is available in the public ORWW archive. Hero swapped to osborne-panoramic.jpg in v66.1."
+  },
+  {
+    "file": "gould-lake-ott-1951.jpg",
+    "source_url": "http://www.orww.org/Elliott_Forest/History/Gould/Photos/10-Ott_Goulds_Lake_1951-10.jpg",
+    "source_page": "http://www.orww.org/Elliott_Forest/Recreation/index.html",
+    "credit": "Roger Ott fishing on Gould's Lake, ca. 1951. Photograph: Don Stonehill, courtesy of the Gould family. Courtesy Oregon Websites & Watersheds Project (ORWW).",
+    "alt_text": "Black-and-white photograph of Roger Ott standing in waders on the shore of Gould's Lake in 1951, holding a fly rod and a stringer of small trout.",
+    "suggested_placement": ["elliott_history", "recreation_lede"]
+  },
+  {
+    "file": "elliott-recreation-group-2018.jpg",
+    "source_url": "http://www.orww.org/Elliott_Forest/Recreation/Loon_Lake/Photos/Matthews_20180515_0120-10.jpg",
+    "source_page": "http://www.orww.org/Elliott_Forest/Recreation/index.html",
+    "credit": "2018 SWOCC F 251 Forest Recreation class field trip, Elliott State Forest. Photograph: Matthews, 2018-05-15. Courtesy Oregon Websites & Watersheds Project (ORWW).",
+    "alt_text": "Color photograph of a 2018 Southwestern Oregon Community College forest recreation class gathered on a gravel forest road in the Elliott State Forest.",
+    "suggested_placement": ["education_section", "field_trip_card"]
+  },
+  {
+    "file": "elliott-trail-2020.jpg",
+    "source_url": "http://www.orww.org/Elliott_Forest/Recreation/2019_Plan/Figures/Black-Priest_20190521-e-10.jpg",
+    "source_page": "http://www.orww.org/Elliott_Forest/Recreation/index.html",
+    "credit": "Black-Priest trail, Elliott State Forest, 2019-05-21. Used by ORWW to illustrate the 2020 SWOCC Virtual Roads and Trails Report. Courtesy Oregon Websites & Watersheds Project (ORWW).",
+    "alt_text": "Color photograph of two people walking along a narrow fern-lined forest trail through tall conifers in the Elliott State Forest.",
+    "suggested_placement": ["education_section", "field_trip_card", "trails_card"]
+  },
+  {
+    "file": "hansen-portrait.jpg",
+    "source_url": "http://www.orww.org/Oregon_Experts/Hansen_HP/Hansen_H_P_OAC_1960s-10.jpg",
+    "source_page": "http://www.orww.org/Oregon_Experts/Hansen_HP/index.html",
+    "credit": "Henry P. Hansen, Oregon Agricultural College / Oregon State University, ca. 1960s. Courtesy Oregon Websites & Watersheds Project (ORWW), via the Henry P. Hansen Publications 1938-1967 project.",
+    "alt_text": "Black-and-white seated portrait of botanist and palynologist Henry P. Hansen at a desk surrounded by books, wearing a suit and tie.",
+    "suggested_placement": ["oregon_experts_section", "scholarship_callout"]
+  },
+  {
+    "file": "osborne-panoramic.jpg",
+    "source_url": "http://www.orww.org/Osbornes_Project/Polk/Bald_Mountain/Bald_Mt_19360630_180_300-10.jpg",
+    "source_page": "http://www.orww.org/Osbornes_Project/Polk/Bald_Mountain.html",
+    "credit": "Bald Mountain Lookout, Polk County, Oregon, west panorama (180-300 degrees), 1936-06-30. Western Oregon Osborne Photos, 1932-1940. Courtesy Oregon Websites & Watersheds Project (ORWW).",
+    "alt_text": "Black-and-white 1936 Osborne fire-lookout panoramic photograph taken from Bald Mountain in Polk County, Oregon, showing layered ridgelines of the Coast Range stretching west toward the horizon.",
+    "suggested_placement": ["homepage_hero", "historical_section", "osborne_feature"],
+    "selection_note": "Chose the Polk County Bald Mountain west-facing (180-300) panorama because (a) the brief preferred Lane or Polk County, (b) the Osbornes_Project/Lane index page returned HTTP 404 at fetch time, leaving Polk's Bald Mountain as the strongest Polk/Lane candidate, and (c) the layered Coast Range ridges make a dramatic landscape composition."
+  }
+]

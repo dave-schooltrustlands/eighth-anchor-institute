@@ -41,6 +41,14 @@ const statusStroke: Record<string, string> = {
     <line x1="0" y1={H / 2} x2={W} y2={H / 2} stroke="#536879" stroke-width="0.5" stroke-dasharray="2 6" opacity="0.5" />
     <line x1={W / 2} y1="0" x2={W / 2} y2={H} stroke="#536879" stroke-width="0.5" stroke-dasharray="2 6" opacity="0.5" />
 
+    <!-- Corner section ticks — surveyor's quadrant markers -->
+    <g stroke="#536879" stroke-width="0.8" opacity="0.55">
+      <line x1="0" y1="0" x2="14" y2="0" /><line x1="0" y1="0" x2="0" y2="14" />
+      <line x1={W} y1="0" x2={W - 14} y2="0" /><line x1={W} y1="0" x2={W} y2="14" />
+      <line x1="0" y1={H} x2="14" y2={H} /><line x1="0" y1={H} x2="0" y2={H - 14} />
+      <line x1={W} y1={H} x2={W - 14} y2={H} /><line x1={W} y1={H} x2={W} y2={H - 14} />
+    </g>
+
     <!-- Paths between buildings -->
     {paths.map((p) => {
       const a = byId[p.from];
