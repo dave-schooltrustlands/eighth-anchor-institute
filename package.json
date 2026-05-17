@@ -12,7 +12,8 @@
     "astro": "astro",
     "smoke": "node scripts/smoke-test-eai-v1.mjs",
     "smoke:v1-3": "node scripts/smoke-test-eai-v1-3.mjs",
-    "smoke:all": "node scripts/smoke-test-eai-v1.mjs && node scripts/smoke-test-eai-v1-3.mjs"
+    "smoke:v1-4": "node scripts/smoke-test-eai-v1-4.mjs",
+    "smoke:all": "node scripts/smoke-test-eai-v1.mjs && node scripts/smoke-test-eai-v1-3.mjs && node scripts/smoke-test-eai-v1-4.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",
