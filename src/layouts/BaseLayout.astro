@@ -13,6 +13,12 @@ export interface Props {
 }
 
 const SITE = 'https://eighthanchor.org';
+// Edit/Help button — set EAI_EDIT_ENABLED=1 at build time when the contribute Worker is deployed.
+// Worker URL once live (mirrors the schooltrustlands.net pattern):
+//   https://eighthanchor-contribute.drdavesullivan.workers.dev
+// Until then the button is hidden; the markup is in place so flipping the flag is a one-line change.
+const EDIT_ENABLED = import.meta.env.EAI_EDIT_ENABLED === '1';
+const CONTRIBUTE_WORKER_URL = 'https://eighthanchor-contribute.drdavesullivan.workers.dev';
 
 const {
   title,
@@ -67,6 +73,7 @@ const resolvedOgDescription = ogDescription || description;
         </a>
         <nav class="text-sm flex items-center gap-5">
           <a href="/" class="hover:text-eai-gold">Institute</a>
+          <a href="/founding/" class="hover:text-eai-gold">Founding Proposal</a>
           <a href="/campus/school-trust/" class="hover:text-eai-gold">School Trust Campus</a>
         </nav>
       </div>
@@ -97,5 +104,18 @@ const resolvedOgDescription = ogDescription || description;
         </div>
       </div>
     </footer>
+
+    {EDIT_ENABLED && (
+      <button
+        id="eai-edit-button"
+        type="button"
+        aria-label="Suggest an edit to this page"
+        class="fixed bottom-5 right-5 z-40 bg-eai-gold text-eai-navy font-mono text-[11px] tracking-[0.18em] uppercase px-4 py-2 rounded-sm shadow-lg hover:bg-eai-bone hover:text-eai-navy transition-colors"
+        data-worker-url={CONTRIBUTE_WORKER_URL}
+        data-page-path={path}
+      >
+        Suggest an edit
+      </button>
+    )}
   </body>
 </html>
