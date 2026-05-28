@@ -1,0 +1,13 @@
+name = "eighthanchor-contribute"
+main = "src/index.js"
+compatibility_date = "2024-11-12"
+
+# R2 bucket for submitted photos
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "eighthanchor-contributions"
+
+# Secrets (set via `npx wrangler secret put`):
+#   BOARD_PASSCODE  — short token shared with named board members; auto-execute path
+#   PUBLIC_PASSCODE — token shared more broadly (newsletter/members); PR-review path
+#   GITHUB_TOKEN    — GitHub PAT with issues:write on dave-schooltrustlands/eighth-anchor-institute

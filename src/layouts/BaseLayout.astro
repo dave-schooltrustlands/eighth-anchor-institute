@@ -17,7 +17,7 @@ const SITE = 'https://eighthanchor.org';
 // Worker URL once live (mirrors the schooltrustlands.net pattern):
 //   https://eighthanchor-contribute.drdavesullivan.workers.dev
 // Until then the button is hidden; the markup is in place so flipping the flag is a one-line change.
-const EDIT_ENABLED = import.meta.env.EAI_EDIT_ENABLED === '1';
+const EDIT_ENABLED = process.env.EAI_EDIT_ENABLED === '1';
 const CONTRIBUTE_WORKER_URL = 'https://eighthanchor-contribute.drdavesullivan.workers.dev';
 
 const {

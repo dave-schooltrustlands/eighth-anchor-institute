@@ -1,0 +1,10 @@
+{
+  "name": "eighthanchor-contribute-worker",
+  "version": "1.0.0",
+  "description": "Two-tier edit submission Worker for eighthanchor.org — board passcode auto-executes, public passcode opens a PR for review.",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  }
+}
