@@ -299,7 +299,7 @@ if (tier === "board") {
     `> ${content.split("\n").join("\n> ")}`,
     ``,
     `### How to handle this`,
-    `- **Approve:** review the diff, then merge. Note: eighthanchor.org is a Worker (not Pages), so after merging, a board-tier edit or a manual \\`wrangler deploy\\` publishes the change live.`,
+    `- **Approve:** review the diff, then merge. Note: eighthanchor.org is served by a Worker (not Pages), so after merging, a board-tier edit or a manual wrangler deploy publishes the change live.`,
     `- **Reject:** close without merging and add a comment to the underlying issue (#${issueNumber}) explaining why.`,
     `- **Refine:** push additional commits to this branch before merging.`,
     ``,
