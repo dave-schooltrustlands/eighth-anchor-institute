@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Process a submission Issue on dave-schooltrustlands/eighth-anchor-institute:
-//   - Tier "board"  -> auto-execute: commit directly to main; Cloudflare Pages deploys.
+//   - Tier "board"  -> auto-execute: commit to main, then build + wrangler deploy (Worker static assets).
 //   - Tier "public" -> PR path: create branch, commit, open PR; moderator reviews.
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -266,9 +266,17 @@ if (tier === "board") {
   execSync(`git commit -m "Submission #${issueNumber}: ${type} on ${pagePath} from ${name}\n\nFriendly: ${friendlyLine.replace(/"/g, '\\"')}\n\nAuto-applied via AI processor (tier:board)."`);
   execSync(`git push origin main`);
   const commitSha = execSync(`git rev-parse HEAD`).toString().trim();
-  // Push to main triggers Cloudflare Pages auto-deploy (no GitHub Action needed).
-  execSync(`gh issue close ${issueNumber} --comment "Auto-applied as ${commitSha.slice(0,7)}. Cloudflare Pages will deploy in ~60-90s. Friendly: ${friendlyLine.replace(/"/g, '\\"')}"`, { stdio: 'inherit' });
-  console.log(`Committed directly to main as ${commitSha}.`);
+  // eighthanchor.org is a Cloudflare Worker serving static assets (NOT a Pages
+  // project), so a push to main does NOT auto-deploy. Build + wrangler-deploy here.
+  console.log("Building site (EAI_EDIT_ENABLED=1) and deploying via wrangler...");
+  execSync(`npm install --no-audit --no-fund`, { stdio: 'inherit' });
+  execSync(`npx astro build`, { stdio: 'inherit', env: { ...process.env, EAI_EDIT_ENABLED: '1' } });
+  execSync(`npx -y wrangler@4 deploy`, {
+    stdio: 'inherit',
+    env: { ...process.env, CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID },
+  });
+  execSync(`gh issue close ${issueNumber} --comment "Auto-applied as ${commitSha.slice(0,7)} and deployed via wrangler. Live in ~30-60s. Friendly: ${friendlyLine.replace(/"/g, '\\"')}"`, { stdio: 'inherit' });
+  console.log(`Committed directly to main as ${commitSha} and deployed.`);
 } else {
   // PR PATH: branch + commit + open PR
   const branch = `submission-${issueNumber}-${Date.now().toString(36)}`;
@@ -291,7 +299,7 @@ if (tier === "board") {
     `> ${content.split("\n").join("\n> ")}`,
     ``,
     `### How to handle this`,
-    `- **Approve:** review the diff, then merge. Cloudflare Pages will deploy in ~60-90s.`,
+    `- **Approve:** review the diff, then merge. Note: eighthanchor.org is a Worker (not Pages), so after merging, a board-tier edit or a manual \\`wrangler deploy\\` publishes the change live.`,
     `- **Reject:** close without merging and add a comment to the underlying issue (#${issueNumber}) explaining why.`,
     `- **Refine:** push additional commits to this branch before merging.`,
     ``,
