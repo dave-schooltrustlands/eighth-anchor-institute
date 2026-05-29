@@ -1,0 +1,569 @@
+---
+// EditButtons.astro
+// Renders the per-page "Edit this page" + "?" Help buttons at the bottom of every page,
+// plus the edit modal, help modal, thank-you/progress view, and per-page Last-updated line.
+//
+// The form posts to the eighthanchor-contribute Cloudflare Worker.
+// Two passcodes are honored: BOARD_PASSCODE (auto-execute) and PUBLIC_PASSCODE (PR review).
+// Users type whichever they have; the Worker discovers tier from the passcode.
+---
+<hr class="mt-16 mb-6 border-eai-blueprint/40" />
+<div class="mx-auto max-w-3xl px-4 sm:px-6 pb-4">
+  <p class="text-sm text-eai-blueprint text-center" id="pageLastUpdated"></p>
+  <p class="text-center mt-3">
+    <button class="edit-trigger inline-flex items-center px-4 py-2 bg-eai-green text-eai-bone rounded font-sans font-semibold text-sm hover:bg-eai-navy transition-colors" type="button" onclick="window.__openEditModal()">
+      <span class="mr-2" aria-hidden="true">✏️</span> Edit this page
+    </button>
+    <button class="help-trigger inline-flex items-center justify-center w-8 h-8 ml-2 bg-eai-bone text-eai-green border-2 border-eai-green rounded-full font-sans font-bold text-base align-middle hover:bg-eai-green hover:text-eai-bone transition-colors" type="button" onclick="window.__openHelpModal()" aria-label="How does the edit process work?">?</button>
+  </p>
+</div>
+
+<!-- Edit modal -->
+<div class="edit-modal-backdrop" id="editModalBackdrop">
+  <div class="edit-modal" role="dialog" aria-labelledby="editModalTitle">
+    <div id="editFormWrap">
+      <h2 id="editModalTitle" class="font-serif text-2xl text-eai-navy mb-2">Edit this page</h2>
+      <p class="hint">Describe what should change in plain English. The AI will figure out where to put it and update the site within a minute or two. <strong>Board members</strong> use the board passcode (auto-applied); <strong>members of the public</strong> use the public passcode (queued as a pull request for a moderator to review).</p>
+
+      <form id="editForm">
+        <label><span>Your name</span>
+          <input type="text" name="name" required maxlength="80" placeholder="Your name (so we know who suggested the edit)">
+        </label>
+        <label><span>Passcode</span>
+          <input type="password" name="passcode" required placeholder="Board or public passcode">
+        </label>
+        <label><span>What kind of edit?</span>
+          <select name="type" required>
+            <option value="fact">A fact or status update</option>
+            <option value="correction">A correction to existing content</option>
+            <option value="addition">An addition (paragraph, item, link)</option>
+            <option value="photo">A photo with caption</option>
+            <option value="comment">A question or comment (no file change)</option>
+          </select>
+        </label>
+        <label><span>What should change?</span>
+          <textarea name="content" required minlength="10" placeholder="Plain English. The AI handles the rest. Be specific about WHERE on the page if you can."></textarea>
+          <div class="row" style="margin-top:0.4rem;">
+            <button type="button" id="micBtn" title="Hold to dictate (Web Speech API)">🎤 Dictate</button>
+            <span class="file-info" id="micStatus"></span>
+          </div>
+        </label>
+        <label><span>Photo (optional)</span>
+          <div class="row">
+            <input type="file" name="photo" accept="image/*" id="photoInput" style="display:none">
+            <button type="button" onclick="document.getElementById('photoInput').click()">📁 Choose file</button>
+            <input type="file" name="cameraPhoto" accept="image/*" capture="environment" id="cameraInput" style="display:none">
+            <button type="button" onclick="document.getElementById('cameraInput').click()">📷 Take photo</button>
+            <span class="file-info" id="photoStatus"></span>
+          </div>
+        </label>
+        <div class="actions">
+          <button type="button" class="cancel" onclick="window.__closeEditModal()">Cancel</button>
+          <button type="submit" class="submit">Submit</button>
+        </div>
+        <div class="progress-msg error" id="editError" style="display:none"></div>
+      </form>
+    </div>
+
+    <!-- Thank-you / progress view -->
+    <div id="tyWrap" class="ty-view" style="display:none">
+      <h2 class="font-serif text-2xl text-eai-navy mb-2">Thanks, <span id="tyName">friend</span> — your edit is in the queue.</h2>
+      <p class="hint" id="tySubhint">Here's what you submitted and how it's progressing:</p>
+      <dl class="ty-summary">
+        <dt>Page</dt><dd id="tyPage"></dd>
+        <dt>Kind</dt><dd id="tyType"></dd>
+        <dt>Tier</dt><dd id="tyTier"></dd>
+        <dt>What you said</dt><dd id="tyContent" style="white-space:pre-wrap"></dd>
+        <dt>Tracking</dt><dd><a id="tyIssueLink" href="#" target="_blank" rel="noopener">issue #—</a></dd>
+      </dl>
+
+      <div class="progress-stages">
+        <span id="stage1">Received</span>
+        <span id="stage2">AI drafting</span>
+        <span id="stage3" data-board="Deploying" data-public="PR opened">Deploying</span>
+        <span id="stage4" data-board="Live" data-public="Awaiting review">Live</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-msg" id="progressMsg">Saved to GitHub. AI starting work…</div>
+      <div class="countdown" id="countdown"></div>
+
+      <div class="ty-actions">
+        <button type="button" class="close" onclick="window.__closeEditModal()">Close (it'll keep working)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Help / tutorial modal -->
+<div class="help-modal-backdrop" id="helpModalBackdrop">
+  <div class="help-modal" role="dialog" aria-labelledby="helpTitle">
+    <h2 id="helpTitle" class="font-serif text-2xl text-eai-navy mb-2">How to edit a page</h2>
+    <p>Any change you'd like to make to this site happens through one form. You don't need to know markdown, git, or anything technical. Plain English is enough — an AI translates what you write into the right edit, and the site updates within about a minute (board tier) or after a moderator approves (public tier).</p>
+
+    <h3>The two tiers</h3>
+    <ul>
+      <li><strong>Board tier</strong> — named ASTL board members hold a shared passcode. Edits with this passcode are reviewed by the AI and applied directly to the live site.</li>
+      <li><strong>Public tier</strong> — a separate passcode shared with members and newsletter subscribers. Edits with this passcode are drafted by the AI but queued as a pull request for a moderator to review before they go live.</li>
+    </ul>
+
+    <h3>The four steps</h3>
+    <ol>
+      <li><span class="step-num">1</span><strong>Click "Edit this page"</strong> at the bottom of whichever page you want to change.</li>
+      <li><span class="step-num">2</span><strong>Type or speak what should change.</strong> "Add a sentence about the Montana ruling under the Briefing Room item." "Fix the typo in paragraph three." Whatever you want, in your own words.</li>
+      <li><span class="step-num">3</span><strong>Add a photo</strong> if relevant — pick a file or take one with the camera. (Optional.)</li>
+      <li><span class="step-num">4</span><strong>Submit.</strong> A progress bar shows what's happening. Board edits go live in ~90s; public edits wait for a moderator.</li>
+    </ol>
+
+    <h3>What you'll need</h3>
+    <ul>
+      <li>Your name (so the change log knows who suggested the edit).</li>
+      <li>A passcode — board members already have theirs; the public passcode is in the member newsletter.</li>
+    </ul>
+
+    <h3>Voice dictation</h3>
+    <p>The 🎤 Dictate button uses your browser's built-in speech recognition. Click it, talk in plain English, click Stop. Works best in Chrome, Edge, or Safari.</p>
+
+    <h3>If you make a mistake</h3>
+    <p>Just submit another edit fixing it. The site is fully version-controlled — every change is recorded in the project history, and any edit can be reverted by submitting "undo the last change to this page."</p>
+
+    <div class="tip"><strong>Tip:</strong> Be specific about <em>where</em> on the page. "Add a new paragraph after the third one about the 1859 Act" is clearer than just "add a paragraph." The AI will figure it out either way, but specific instructions give better results.</div>
+
+    <p class="mt-4"><button type="button" class="help-close" onclick="window.__closeHelpModal()">Got it</button></p>
+  </div>
+</div>
+
+<style is:global>
+  /* Edit + Help modal styles for eighthanchor.org.
+     Navy + gold brand: #002040 forest, #c0a060 gold, #f5f1e8 cream, #2c4a6e stone. */
+
+  .edit-modal-backdrop, .help-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 32, 64, 0.55);
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+  }
+  .edit-modal-backdrop.open, .help-modal-backdrop.open { display: flex; }
+
+  .edit-modal, .help-modal {
+    background: #f5f1e8;
+    max-width: 600px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 1.75rem;
+    box-shadow: 0 20px 60px rgba(0, 32, 64, 0.4);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #1a1a2e;
+  }
+
+  .help-modal h3 {
+    margin: 1.25rem 0 0.4rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #001530;
+  }
+  .help-modal p, .help-modal li { margin: 0.5rem 0; }
+  .help-modal ol, .help-modal ul { padding-left: 1.4rem; }
+  .help-modal .step-num {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    background: #002040;
+    color: #f5f1e8;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-right: 0.4rem;
+  }
+  .help-modal .help-close, .edit-modal .actions .submit, .ty-actions .close {
+    padding: 0.5rem 1.2rem;
+    background: #002040;
+    color: #f5f1e8;
+    border: none;
+    border-radius: 4px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .help-modal .help-close:hover, .edit-modal .actions .submit:hover { background: #001530; }
+  .help-modal .tip {
+    background: #fef3c7;
+    border-left: 3px solid #c0a060;
+    padding: 0.6rem 0.8rem;
+    margin: 0.75rem 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+  }
+
+  .edit-modal p.hint { margin: 0 0 1rem; color: #5a6a82; font-size: 0.9rem; }
+  .edit-modal label { display: block; margin: 0.75rem 0; }
+  .edit-modal label > span { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.85rem; color: #001530; }
+  .edit-modal input[type=text],
+  .edit-modal input[type=password],
+  .edit-modal select,
+  .edit-modal textarea {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid #2c4a6e;
+    border-radius: 4px;
+    font: inherit;
+    box-sizing: border-box;
+    background: #fff;
+  }
+  .edit-modal textarea { min-height: 6rem; resize: vertical; }
+  .edit-modal .row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+  .edit-modal .row button {
+    padding: 0.4rem 0.7rem;
+    border: 1px solid #2c4a6e;
+    background: #fff;
+    border-radius: 4px;
+    font: inherit;
+    cursor: pointer;
+    color: #001530;
+  }
+  .edit-modal .row button:hover { background: #f5f1e8; }
+  .edit-modal .row button.recording { background: #b65a3c; color: #fff; border-color: #b65a3c; }
+  .edit-modal .row .file-info { font-size: 0.85rem; color: #5a6a82; }
+  .edit-modal .actions { margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
+  .edit-modal .actions button { padding: 0.5rem 1rem; border-radius: 4px; font: inherit; cursor: pointer; }
+  .edit-modal .actions .cancel { background: #fff; border: 1px solid #2c4a6e; color: #001530; }
+
+  /* Thank-you / progress view */
+  .ty-view { text-align: left; }
+  .ty-summary {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    border-left: 4px solid #c0a060;
+  }
+  .ty-summary dt {
+    font-weight: 600;
+    color: #5a6a82;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+  }
+  .ty-summary dt:first-child { margin-top: 0; }
+  .ty-summary dd { margin: 0.1rem 0 0; color: #1a1a2e; }
+  .progress-track {
+    background: #e2dccd;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 1rem 0 0.4rem;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #002040, #c0a060);
+    transition: width 0.6s ease;
+    width: 5%;
+  }
+  .progress-stages {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #5a6a82;
+    margin-bottom: 0.5rem;
+  }
+  .progress-stages span { flex: 1; text-align: center; }
+  .progress-stages span.active { color: #001530; font-weight: 700; }
+  .progress-stages span.done { color: #c0a060; }
+  .progress-msg {
+    padding: 0.6rem 0.8rem;
+    background: #fef3c7;
+    border-radius: 4px;
+    color: #7a5500;
+    font-size: 0.92rem;
+    margin: 0.6rem 0;
+  }
+  .progress-msg.live { background: #d6e4d6; color: #1a3a1a; font-weight: 600; }
+  .progress-msg.error { background: #fdd; color: #7a1a1a; }
+  .countdown { font-size: 0.82rem; color: #5a6a82; }
+  .ty-actions { margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
+</style>
+
+<script is:inline>
+(function(){
+  var WORKER = 'https://eighthanchor-contribute.drdavesullivan.workers.dev';
+
+  function currentPagePath() {
+    var p = window.location.pathname;
+    // Normalize: keep leading slash, no double, ensure trailing slash unless root
+    p = p.replace(/\/+/g, '/');
+    if (p !== '/' && !/\.[a-z]+$/.test(p) && !p.endsWith('/')) p += '/';
+    return p;
+  }
+
+  window.__openEditModal = function() {
+    document.getElementById('editFormWrap').style.display = '';
+    document.getElementById('tyWrap').style.display = 'none';
+    document.getElementById('editError').style.display = 'none';
+    document.getElementById('editModalBackdrop').classList.add('open');
+    var nameField = document.querySelector('#editForm [name=name]');
+    if (!nameField.value) {
+      var saved = localStorage.getItem('eai_editor_name');
+      if (saved) nameField.value = saved;
+    }
+    var savedPass = localStorage.getItem('eai_editor_passcode');
+    if (savedPass) document.querySelector('#editForm [name=passcode]').value = savedPass;
+  };
+  window.__closeEditModal = function() { document.getElementById('editModalBackdrop').classList.remove('open'); };
+  window.__openHelpModal = function() { document.getElementById('helpModalBackdrop').classList.add('open'); try { localStorage.setItem('eai_help_seen', '1'); } catch(e){} };
+  window.__closeHelpModal = function() { document.getElementById('helpModalBackdrop').classList.remove('open'); };
+  document.getElementById('helpModalBackdrop').addEventListener('click', function(e){ if (e.target === this) window.__closeHelpModal(); });
+  document.getElementById('editModalBackdrop').addEventListener('click', function(e){ if (e.target === this) window.__closeEditModal(); });
+
+  function wirePhotoInput(id) {
+    document.getElementById(id).addEventListener('change', function(e){
+      var f = e.target.files[0];
+      if (f) document.getElementById('photoStatus').textContent = f.name + ' (' + Math.round(f.size/1024) + ' KB)';
+    });
+  }
+  wirePhotoInput('photoInput');
+  wirePhotoInput('cameraInput');
+
+  // Voice
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = null, recording = false;
+  var micBtn = document.getElementById('micBtn');
+  var micStatus = document.getElementById('micStatus');
+  if (!SR) {
+    micBtn.disabled = true;
+    micStatus.textContent = '(voice not supported in this browser — try Chrome/Edge/Safari)';
+  } else {
+    micBtn.addEventListener('click', function(){
+      if (recording) { recognition.stop(); return; }
+      recognition = new SR();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      var textArea = document.querySelector('#editForm [name=content]');
+      var startText = textArea.value;
+      recognition.onresult = function(e){
+        var finalT = '', interimT = '';
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          var t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) finalT += t; else interimT += t;
+        }
+        var sep = startText && !startText.endsWith(' ') ? ' ' : '';
+        textArea.value = startText + sep + finalT + interimT;
+      };
+      recognition.onend = function(){
+        recording = false; micBtn.classList.remove('recording'); micBtn.textContent = '🎤 Dictate';
+        micStatus.textContent = 'Dictation stopped.';
+        startText = document.querySelector('#editForm [name=content]').value;
+      };
+      recognition.onerror = function(e){
+        recording = false; micBtn.classList.remove('recording'); micBtn.textContent = '🎤 Dictate';
+        micStatus.textContent = 'Mic error: ' + e.error;
+      };
+      recognition.start();
+      recording = true; micBtn.classList.add('recording'); micBtn.textContent = '⏹ Stop';
+      micStatus.textContent = 'Listening…';
+    });
+  }
+
+  function setProgress(pct, stages, msgText, msgClass) {
+    document.getElementById('progressFill').style.width = pct + '%';
+    ['stage1','stage2','stage3','stage4'].forEach(function(id, i){
+      var el = document.getElementById(id);
+      el.classList.remove('active','done');
+      if (stages[i] === 'done') el.classList.add('done');
+      else if (stages[i] === 'active') el.classList.add('active');
+    });
+    var msg = document.getElementById('progressMsg');
+    msg.textContent = msgText;
+    msg.className = 'progress-msg' + (msgClass ? ' ' + msgClass : '');
+  }
+
+  function applyTierToStages(tier) {
+    var s3 = document.getElementById('stage3');
+    var s4 = document.getElementById('stage4');
+    if (tier === 'public') {
+      s3.textContent = s3.getAttribute('data-public');
+      s4.textContent = s4.getAttribute('data-public');
+    } else {
+      s3.textContent = s3.getAttribute('data-board');
+      s4.textContent = s4.getAttribute('data-board');
+    }
+  }
+
+  var pollTimer = null;
+  var startTs = null;
+  var countdownTimer = null;
+  var currentTier = 'board';
+
+  function showThankYou(data) {
+    currentTier = data.tier || 'board';
+    document.getElementById('editFormWrap').style.display = 'none';
+    document.getElementById('tyWrap').style.display = '';
+    document.getElementById('tyName').textContent = data.summary.name;
+    document.getElementById('tyPage').textContent = data.summary.page;
+    document.getElementById('tyType').textContent = data.summary.type;
+    document.getElementById('tyTier').textContent = currentTier === 'board' ? 'Board (auto-applied)' : 'Public (PR review)';
+    document.getElementById('tyContent').textContent = data.summary.contentExcerpt;
+    var link = document.getElementById('tyIssueLink');
+    link.href = data.issueUrl;
+    link.textContent = 'issue #' + data.issueNumber;
+    var subhint = document.getElementById('tySubhint');
+    if (currentTier === 'public') {
+      subhint.textContent = "Here's what you submitted. Public-tier edits are drafted by the AI and queued as a pull request for a moderator to review.";
+    }
+    applyTierToStages(currentTier);
+
+    setProgress(10, ['done','active','',''], 'Saved to GitHub. AI starting work…');
+    startTs = Date.now();
+    updateCountdown();
+    countdownTimer = setInterval(updateCountdown, 1000);
+    pollStatus(data.issueNumber);
+  }
+
+  function updateCountdown() {
+    if (!startTs) return;
+    var elapsed = Math.floor((Date.now() - startTs) / 1000);
+    var target = currentTier === 'public' ? 60 : 120;
+    var est = Math.max(0, target - elapsed);
+    document.getElementById('countdown').textContent = est > 0
+      ? 'Roughly ' + est + 's remaining (typical: ' + (currentTier === 'public' ? '30–60s to PR' : '90–120s to live') + ')'
+      : (currentTier === 'public' ? 'Still drafting the PR…' : 'Still going — usually under 2 minutes.');
+  }
+
+  function pollStatus(issueNumber) {
+    var attempts = 0;
+    function tick() {
+      attempts++;
+      fetch(WORKER + '/status?issue=' + issueNumber)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.tier) { currentTier = d.tier; applyTierToStages(d.tier); }
+          if (d.stage === 'ai_drafting') setProgress(30, ['done','active','',''], d.message);
+          else if (d.stage === 'ai_finishing') setProgress(45, ['done','active','',''], d.message);
+          else if (d.stage === 'pr_open') {
+            setProgress(90, ['done','done','done','active'], d.message + ' ', 'live');
+            var msg = document.getElementById('progressMsg');
+            msg.innerHTML = d.message + ' <a href="' + d.prUrl + '" target="_blank" rel="noopener" style="text-decoration:underline;color:#001530;">View PR</a>';
+            clearInterval(countdownTimer);
+            document.getElementById('countdown').textContent = '';
+            return;
+          }
+          else if (d.stage === 'deploy_queued') setProgress(60, ['done','done','active',''], d.message);
+          else if (d.stage === 'deploying') setProgress(80, ['done','done','active',''], d.message);
+          else if (d.stage === 'live') {
+            setProgress(100, ['done','done','done','done'], 'Your edit is live! Refreshing this page in 4 seconds…', 'live');
+            clearInterval(countdownTimer);
+            document.getElementById('countdown').textContent = '';
+            setTimeout(function(){
+              window.location.href = window.location.pathname + '?v=' + Date.now();
+            }, 4000);
+            return;
+          } else if (d.stage === 'deploy_failed' || d.stage === 'no_pr') {
+            setProgress(100, ['done','done','done','active'], d.message, 'error');
+            clearInterval(countdownTimer);
+            return;
+          }
+          if (attempts < 60) pollTimer = setTimeout(tick, 3500);
+          else {
+            setProgress(95, ['done','done','done','active'], 'Still working — check the issue link for details.', 'error');
+            clearInterval(countdownTimer);
+          }
+        })
+        .catch(function(err){
+          if (attempts < 60) pollTimer = setTimeout(tick, 5000);
+        });
+    }
+    tick();
+  }
+
+  document.getElementById('editForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var errEl = document.getElementById('editError');
+    errEl.style.display = 'none';
+    var fd = new FormData(e.target);
+    fd.append('page', currentPagePath());
+    localStorage.setItem('eai_editor_name', fd.get('name'));
+    localStorage.setItem('eai_editor_passcode', fd.get('passcode'));
+    var submitBtn = e.target.querySelector('button.submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    try {
+      var resp = await fetch(WORKER, { method: 'POST', body: fd });
+      var data = await resp.json();
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+      if (resp.ok && data.success) {
+        showThankYou(data);
+      } else {
+        errEl.textContent = 'Submission failed: ' + (data.error || resp.statusText);
+        errEl.style.display = 'block';
+      }
+    } catch(err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+      errEl.textContent = 'Network error: ' + err.message;
+      errEl.style.display = 'block';
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { window.__closeEditModal(); window.__closeHelpModal(); }
+  });
+
+  // Per-page "Last updated" line via GitHub commits API on the repo.
+  // Strategy: ask the eighthanchor-contribute Worker for a status-like ping?
+  // Simpler: query GitHub commits API directly for the page's file path.
+  // We don't have an authenticated path here, so we use unauthenticated calls
+  // (rate-limited to 60/hr/IP). If the page is one we can't resolve to a file
+  // via simple rules, we skip silently.
+  (function fetchPageLastUpdated() {
+    var pagePath = window.location.pathname;
+    // Try a sequence of candidate file paths
+    function buildCandidates(p) {
+      var norm = p.replace(/\/+/g, '/').replace(/\/$/, '');
+      if (norm === '') norm = '/';
+      if (norm === '/') return ['src/pages/index.astro'];
+      var rel = norm.replace(/^\//, '');
+      var segs = rel.split('/');
+      var cs = [
+        'src/pages/' + rel + '.astro',
+        'src/pages/' + rel + '/index.astro',
+        'src/pages/' + rel + '.md',
+      ];
+      if (segs.length >= 2) cs.push('src/content/' + segs[0] + '/' + segs[segs.length - 1] + '.md');
+      return cs;
+    }
+    var candidates = buildCandidates(pagePath);
+    var i = 0;
+    function tryNext() {
+      if (i >= candidates.length) return;
+      var ghPath = candidates[i++];
+      fetch('https://api.github.com/repos/dave-schooltrustlands/eighth-anchor-institute/commits?path=' + encodeURIComponent(ghPath) + '&per_page=1')
+        .then(function(r){ return r.ok ? r.json() : []; })
+        .then(function(commits){
+          if (!commits || !commits.length) { tryNext(); return; }
+          var c = commits[0];
+          var date = c.commit.author.date.slice(0,10);
+          var author = c.commit.author.name;
+          var fullMsg = c.commit.message;
+          var friendlyLine = '';
+          var fm = fullMsg.match(/Friendly:\s*(.+)/);
+          if (fm) friendlyLine = fm[1];
+          else friendlyLine = fullMsg.split('\n')[0];
+          var meta = document.getElementById('pageLastUpdated');
+          if (meta) {
+            meta.innerHTML = 'Last updated ' + date + ' by ' + author + ' — ' + friendlyLine + '';
+          }
+        }).catch(function(){ tryNext(); });
+    }
+    tryNext();
+  })();
+})();
+</script>

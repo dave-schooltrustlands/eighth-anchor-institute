@@ -1,5 +1,6 @@
 ---
 import EAIUtilityBar from '../components/EAIUtilityBar.astro';
+import EditButtons from '../components/EditButtons.astro';
 
 export interface Props {
   title: string;
@@ -105,17 +106,6 @@ const resolvedOgDescription = ogDescription || description;
       </div>
     </footer>
 
-    {EDIT_ENABLED && (
-      <button
-        id="eai-edit-button"
-        type="button"
-        aria-label="Suggest an edit to this page"
-        class="fixed bottom-5 right-5 z-40 bg-eai-gold text-eai-navy font-mono text-[11px] tracking-[0.18em] uppercase px-4 py-2 rounded-sm shadow-lg hover:bg-eai-bone hover:text-eai-navy transition-colors"
-        data-worker-url={CONTRIBUTE_WORKER_URL}
-        data-page-path={path}
-      >
-        Suggest an edit
-      </button>
-    )}
+    {EDIT_ENABLED && <EditButtons />}
   </body>
 </html>
